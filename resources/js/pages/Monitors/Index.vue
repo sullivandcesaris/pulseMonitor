@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useLanguage } from '@/composables/useLanguage';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Activity, Pencil, Plus, Trash2 } from 'lucide-vue-next';
@@ -14,27 +15,35 @@ type Monitor = {
 };
 
 defineProps<{ monitors: Monitor[] }>();
+const { isPortuguese } = useLanguage();
 const breadcrumbs = [{ title: 'Monitors', href: '/monitors' }];
 
 function removeMonitor(id: number) {
-    if (window.confirm('Delete this monitor?')) router.delete(route('monitors.destroy', { monitor: id }));
+    if (window.confirm(isPortuguese.value ? 'Excluir este monitor?' : 'Delete this monitor?'))
+        router.delete(route('monitors.destroy', { monitor: id }));
 }
 </script>
 
 <template>
-    <Head title="Monitors" />
+    <Head :title="isPortuguese ? 'Monitores' : 'Monitors'" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
             <div class="flex items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-semibold tracking-tight">Monitors</h1>
-                    <p class="text-muted-foreground">Manage the websites and APIs PulseMonitor checks.</p>
+                    <h1 class="text-2xl font-semibold tracking-tight">{{ isPortuguese ? 'Monitores' : 'Monitors' }}</h1>
+                    <p class="text-muted-foreground">
+                        {{
+                            isPortuguese
+                                ? 'Gerencie os sites e APIs verificados pelo PulseMonitor.'
+                                : 'Manage the websites and APIs PulseMonitor checks.'
+                        }}
+                    </p>
                 </div>
                 <Link
                     :href="route('monitors.create')"
                     class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:opacity-90"
                 >
-                    <Plus class="size-4" /> Add monitor
+                    <Plus class="size-4" /> {{ isPortuguese ? 'Adicionar monitor' : 'Add monitor' }}
                 </Link>
             </div>
             <div v-if="monitors.length" class="overflow-hidden rounded-xl border bg-card">
@@ -42,11 +51,11 @@ function removeMonitor(id: number) {
                     <table class="w-full text-left text-sm">
                         <thead class="border-b bg-muted/40 text-muted-foreground">
                             <tr>
-                                <th class="px-4 py-3 font-medium">Monitor</th>
-                                <th class="px-4 py-3 font-medium">Method</th>
-                                <th class="px-4 py-3 font-medium">Interval</th>
-                                <th class="px-4 py-3 font-medium">Status</th>
-                                <th class="px-4 py-3 text-right font-medium">Actions</th>
+                                <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Monitor' : 'Monitor' }}</th>
+                                <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Método' : 'Method' }}</th>
+                                <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Intervalo' : 'Interval' }}</th>
+                                <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Status' : 'Status' }}</th>
+                                <th class="px-4 py-3 text-right font-medium">{{ isPortuguese ? 'Ações' : 'Actions' }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -56,10 +65,10 @@ function removeMonitor(id: number) {
                                     <div class="max-w-xs truncate text-xs text-muted-foreground">{{ monitor.target_url }}</div>
                                 </td>
                                 <td class="px-4 py-4">{{ monitor.method }}</td>
-                                <td class="px-4 py-4">Every {{ monitor.interval_seconds }}s</td>
+                                <td class="px-4 py-4">{{ isPortuguese ? 'A cada' : 'Every' }} {{ monitor.interval_seconds }}s</td>
                                 <td class="px-4 py-4">
                                     <span :class="monitor.is_enabled ? 'text-emerald-600' : 'text-muted-foreground'">{{
-                                        monitor.is_enabled ? 'Enabled' : 'Disabled'
+                                        monitor.is_enabled ? (isPortuguese ? 'Ativo' : 'Enabled') : isPortuguese ? 'Desativado' : 'Disabled'
                                     }}</span>
                                 </td>
                                 <td class="px-4 py-4">
@@ -67,11 +76,11 @@ function removeMonitor(id: number) {
                                         <Link
                                             :href="route('monitors.edit', { monitor: monitor.id })"
                                             class="rounded-md p-2 hover:bg-muted"
-                                            title="Edit"
+                                            :title="isPortuguese ? 'Editar' : 'Edit'"
                                             ><Pencil class="size-4" /></Link
                                         ><button
                                             class="rounded-md p-2 text-destructive hover:bg-muted"
-                                            title="Delete"
+                                            :title="isPortuguese ? 'Excluir' : 'Delete'"
                                             @click="removeMonitor(monitor.id)"
                                         >
                                             <Trash2 class="size-4" />
@@ -85,8 +94,14 @@ function removeMonitor(id: number) {
             </div>
             <div v-else class="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-card p-8 text-center">
                 <Activity class="mb-3 size-8 text-muted-foreground" />
-                <h2 class="font-semibold">No monitors yet</h2>
-                <p class="mt-1 max-w-md text-sm text-muted-foreground">Create your first monitor to start tracking availability.</p>
+                <h2 class="font-semibold">{{ isPortuguese ? 'Nenhum monitor ainda' : 'No monitors yet' }}</h2>
+                <p class="mt-1 max-w-md text-sm text-muted-foreground">
+                    {{
+                        isPortuguese
+                            ? 'Crie seu primeiro monitor para começar a acompanhar a disponibilidade.'
+                            : 'Create your first monitor to start tracking availability.'
+                    }}
+                </p>
             </div>
         </div>
     </AppLayout>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/composables/useLanguage';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
@@ -19,7 +21,15 @@ type Stats = {
     averageResponseTime: number | null;
     uptimePercentage: number | null;
 };
-type Check = { id: number; name: string | null; url: string | null; status: string; responseTime: number | null; checkedAt: string | null };
+type Check = {
+    id: number;
+    name: string | null;
+    monitorId: number;
+    url: string | null;
+    status: string;
+    responseTime: number | null;
+    checkedAt: string | null;
+};
 type HistoryPoint = { checkedAt: string | null; responseTime: number };
 type MonitorOption = { id: number; name: string };
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent]);
@@ -32,6 +42,11 @@ const copy = computed(() =>
               recent: 'Checks recentes',
               recentText: 'Últimos resultados dos seus alvos de monitoramento.',
               viewMonitors: 'Ver monitores',
+              viewAll: 'Ver todos',
+              allChecks: 'Todos os checks',
+              allChecksText: 'Consulte os resultados do período selecionado e filtre por monitor.',
+              filterByMonitor: 'Filtrar por monitor',
+              allMonitors: 'Todos os monitores',
               availability: 'Disponibilidade',
               response: 'Tempo de resposta',
               checks: 'checks registrados',
@@ -57,6 +72,11 @@ const copy = computed(() =>
               recent: 'Recent checks',
               recentText: 'Latest results from your monitoring targets.',
               viewMonitors: 'View monitors',
+              viewAll: 'View all',
+              allChecks: 'All checks',
+              allChecksText: 'Review results for the selected period and filter by monitor.',
+              filterByMonitor: 'Filter by monitor',
+              allMonitors: 'All monitors',
               availability: 'Availability',
               response: 'Response time',
               checks: 'checks recorded',
@@ -82,6 +102,7 @@ const props = defineProps<{
     stats: Stats;
     period: { key: string; label: string };
     recentChecks: Check[];
+    allChecks: Check[];
     responseTimeHistory: HistoryPoint[];
     monitors: MonitorOption[];
     coverage: { checks: number; expectedChecks: number; hasData: boolean };
@@ -90,6 +111,8 @@ const props = defineProps<{
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
 const selectedPeriod = ref(props.period.key);
 const selectedMonitor = ref('');
+const isAllChecksOpen = ref(false);
+const selectedCheckMonitor = ref('');
 const isLoading = ref(false);
 const loadError = ref('');
 const formatResponseTime = (value: number | null) => (value === null ? '—' : Math.round(value) + ' ms');
@@ -105,6 +128,9 @@ const statusLabel = (status: string) =>
               : 'Down'
           : copy.value.unknown;
 const statusClass = (status: string) => (status === 'up' ? 'text-emerald-600' : status === 'down' ? 'text-destructive' : 'text-muted-foreground');
+const filteredAllChecks = computed(() =>
+    selectedCheckMonitor.value ? props.allChecks.filter((check) => String(check.monitorId) === selectedCheckMonitor.value) : props.allChecks,
+);
 const chartOption = computed(() => ({
     tooltip: { trigger: 'axis' },
     grid: { left: 40, right: 16, top: 16, bottom: 24 },
@@ -205,9 +231,14 @@ const statCards = computed(() => [
                             <h2 class="font-semibold">{{ copy.recent }}</h2>
                             <p class="text-sm text-muted-foreground">{{ copy.recentText }}</p>
                         </div>
-                        <a href="/monitors" class="text-sm font-medium text-primary hover:underline">{{ copy.viewMonitors }}</a>
+                        <div class="flex items-center gap-4">
+                            <a href="/monitors" class="text-sm font-medium text-primary hover:underline">{{ copy.viewMonitors }}</a>
+                            <Button variant="outline" size="sm" :disabled="!props.allChecks.length" @click="isAllChecksOpen = true">
+                                {{ copy.viewAll }}
+                            </Button>
+                        </div>
                     </div>
-                    <div v-if="recentChecks.length" class="divide-y">
+                    <div v-if="recentChecks.length" class="scrollbar-styled max-h-[22rem] divide-y overflow-y-auto">
                         <div v-for="check in recentChecks" :key="check.id" class="grid gap-2 p-5 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                             <div>
                                 <p class="font-medium">{{ check.name }}</p>
@@ -257,5 +288,34 @@ const statCards = computed(() => [
                 <div v-else class="flex h-48 items-center justify-center text-sm text-muted-foreground">{{ copy.noResponse }}</div>
             </div>
         </div>
+        <Dialog v-model:open="isAllChecksOpen">
+            <DialogContent class="max-w-3xl">
+                <DialogHeader>
+                    <DialogTitle>{{ copy.allChecks }}</DialogTitle>
+                    <DialogDescription>{{ copy.allChecksText }}</DialogDescription>
+                </DialogHeader>
+                <div class="flex flex-col gap-2">
+                    <label for="all-checks-monitor" class="text-sm font-medium">{{ copy.filterByMonitor }}</label>
+                    <select id="all-checks-monitor" v-model="selectedCheckMonitor" class="rounded-md border bg-background px-3 py-2 text-sm">
+                        <option value="">{{ copy.allMonitors }}</option>
+                        <option v-for="monitor in monitors" :key="monitor.id" :value="String(monitor.id)">{{ monitor.name }}</option>
+                    </select>
+                </div>
+                <div v-if="filteredAllChecks.length" class="scrollbar-styled max-h-[55vh] divide-y overflow-y-auto rounded-md border">
+                    <div v-for="check in filteredAllChecks" :key="check.id" class="grid gap-2 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+                        <div>
+                            <p class="font-medium">{{ check.name }}</p>
+                            <p class="truncate text-sm text-muted-foreground">{{ check.url }}</p>
+                        </div>
+                        <span class="text-sm" :class="statusClass(check.status)">{{ statusLabel(check.status) }}</span>
+                        <div class="text-left text-sm text-muted-foreground sm:text-right">
+                            <p>{{ formatResponseTime(check.responseTime) }}</p>
+                            <p>{{ formatDate(check.checkedAt) }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="rounded-md border p-8 text-center text-sm text-muted-foreground">{{ copy.noData }}</div>
+            </DialogContent>
+        </Dialog>
     </AppLayout>
 </template>

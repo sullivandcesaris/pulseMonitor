@@ -16,8 +16,8 @@ class IncidentDetectionTest extends TestCase
 
     public function test_an_incident_opens_after_consecutive_failures(): void
     {
-        Http::fake(['https://example.com/*' => Http::sequence()->pushStatus(500)->pushStatus(500)->pushStatus(500)]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::sequence()->pushStatus(500)->pushStatus(500)->pushStatus(500)]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
 
         $checker = app(MonitorChecker::class);
         $checker->check($monitor);
@@ -34,8 +34,8 @@ class IncidentDetectionTest extends TestCase
 
     public function test_temporary_failure_does_not_open_an_incident(): void
     {
-        Http::fake(['https://example.com/*' => Http::sequence()->pushStatus(500)->pushStatus(200)]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::sequence()->pushStatus(500)->pushStatus(200)]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
         $checker = app(MonitorChecker::class);
 
         $checker->check($monitor);
@@ -46,8 +46,8 @@ class IncidentDetectionTest extends TestCase
 
     public function test_recovery_resolves_the_open_incident_and_records_duration(): void
     {
-        Http::fake(['https://example.com/*' => Http::sequence()->pushStatus(500)->pushStatus(500)->pushStatus(500)->pushStatus(200)]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::sequence()->pushStatus(500)->pushStatus(500)->pushStatus(500)->pushStatus(200)]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
         $checker = app(MonitorChecker::class);
 
         $checker->check($monitor);
@@ -61,8 +61,8 @@ class IncidentDetectionTest extends TestCase
 
     public function test_duplicate_failure_processing_does_not_create_duplicate_incidents(): void
     {
-        Http::fake(['https://example.com/*' => Http::response('', 500)]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::response('', 500)]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
         $checker = app(MonitorChecker::class);
 
         $checker->check($monitor);

@@ -41,6 +41,16 @@ class DashboardController extends Controller
         $checksWithResponseTime = $checks->whereNotNull('response_time_ms');
         $totalChecks = $checks->count();
         $upChecks = $checks->where('status', 'up')->count();
+        $checkPayload = $checks->map(fn (MonitorCheck $check) => [
+            'id' => $check->id,
+            'name' => $check->monitor?->name,
+            'monitorId' => $check->monitor_id,
+            'url' => $check->monitor?->target_url,
+            'status' => $check->status,
+            'httpStatus' => $check->http_status,
+            'responseTime' => $check->response_time_ms,
+            'checkedAt' => $check->checked_at?->toIso8601String(),
+        ])->values();
 
         return Inertia::render('Dashboard', [
             'period' => ['key' => $periodHours === 6 ? '6h' : ($periodHours === 24 ? '24h' : '7d'), 'label' => $periodHours === 6 ? 'Last 6 hours' : ($periodHours === 24 ? 'Last 24 hours' : 'Last 7 days'), 'since' => $periodStart->toIso8601String()],
@@ -56,15 +66,8 @@ class DashboardController extends Controller
                 'averageResponseTime' => $checksWithResponseTime->avg('response_time_ms'),
                 'uptimePercentage' => $totalChecks > 0 ? round(($upChecks / $totalChecks) * 100, 2) : null,
             ],
-            'recentChecks' => $checks->take(10)->map(fn (MonitorCheck $check) => [
-                'id' => $check->id,
-                'name' => $check->monitor?->name,
-                'url' => $check->monitor?->target_url,
-                'status' => $check->status,
-                'httpStatus' => $check->http_status,
-                'responseTime' => $check->response_time_ms,
-                'checkedAt' => $check->checked_at?->toIso8601String(),
-            ])->values(),
+            'recentChecks' => $checkPayload->take(10)->values(),
+            'allChecks' => $checkPayload,
             'responseTimeHistory' => $checksWithResponseTime->take(20)->reverse()->values()->map(fn (MonitorCheck $check) => [
                 'checkedAt' => $check->checked_at?->toIso8601String(),
                 'responseTime' => $check->response_time_ms,

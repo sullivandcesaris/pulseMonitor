@@ -19,8 +19,8 @@ class MonitoringEngineTest extends TestCase
 
     public function test_successful_get_check_is_recorded(): void
     {
-        Http::fake(['https://example.com/*' => Http::response('ok', 200)]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::response('ok', 200)]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
 
         $check = app(MonitorChecker::class)->check($monitor);
 
@@ -32,8 +32,8 @@ class MonitoringEngineTest extends TestCase
 
     public function test_head_check_and_unexpected_status_are_recorded(): void
     {
-        Http::fake(['https://example.com/*' => Http::response('', 204)]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health', 'method' => 'HEAD', 'expected_status' => 200]);
+        Http::fake(['https://93.184.216.34/*' => Http::response('', 204)]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health', 'method' => 'HEAD', 'expected_status' => 200]);
 
         $check = app(MonitorChecker::class)->check($monitor);
 
@@ -55,8 +55,8 @@ class MonitoringEngineTest extends TestCase
 
     public function test_connection_failures_are_recorded_as_down(): void
     {
-        Http::fake(['https://example.com/*' => Http::failedConnection()]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::failedConnection()]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
 
         $check = app(MonitorChecker::class)->check($monitor);
 
@@ -77,8 +77,8 @@ class MonitoringEngineTest extends TestCase
 
     public function test_redirects_are_not_followed(): void
     {
-        Http::fake(['https://example.com/*' => Http::response('', 302, ['Location' => 'https://example.org/'])]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::response('', 302, ['Location' => 'https://example.org/'])]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
 
         $check = app(MonitorChecker::class)->check($monitor);
 
@@ -102,8 +102,8 @@ class MonitoringEngineTest extends TestCase
 
     public function test_infrastructure_failures_are_retried_and_recorded_after_final_attempt(): void
     {
-        Http::fake(['https://example.com/*' => Http::failedConnection()]);
-        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        Http::fake(['https://93.184.216.34/*' => Http::failedConnection()]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://93.184.216.34/health']);
         $job = new CheckMonitor($monitor);
 
         $this->assertSame(3, $job->tries);

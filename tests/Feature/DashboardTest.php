@@ -48,6 +48,20 @@ class DashboardTest extends TestCase
             ->where('stats.openIncidents', 1));
     }
 
+    public function test_dashboard_keeps_all_monitor_options_when_filtering(): void
+    {
+        [$user, $organization] = $this->dashboardUser();
+        $first = Monitor::factory()->for($organization)->create(['name' => 'Alpha API']);
+        $second = Monitor::factory()->for($organization)->create(['name' => 'Beta API']);
+
+        $response = $this->actingAs($user)->get(route('dashboard', ['monitor_id' => $first->id]));
+
+        $response->assertInertia(fn ($page) => $page
+            ->has('monitors', 2)
+            ->where('monitors.0.name', 'Alpha API')
+            ->where('monitors.1.name', 'Beta API'));
+    }
+
     public function test_incident_history_is_scoped_to_the_users_organizations(): void
     {
         [$user, $organization] = $this->dashboardUser();

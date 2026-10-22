@@ -21,6 +21,10 @@ class DashboardController extends Controller
             default => 24,
         };
         $selectedMonitorId = $request->integer('monitor_id') ?: null;
+        $monitorOptions = Monitor::query()
+            ->whereIn('organization_id', $organizationIds)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         $monitors = Monitor::query()
             ->whereIn('organization_id', $organizationIds)
             ->when($selectedMonitorId, fn ($query) => $query->whereKey($selectedMonitorId))
@@ -40,7 +44,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'period' => ['key' => $periodHours === 6 ? '6h' : ($periodHours === 24 ? '24h' : '7d'), 'label' => $periodHours === 6 ? 'Last 6 hours' : ($periodHours === 24 ? 'Last 24 hours' : 'Last 7 days'), 'since' => $periodStart->toIso8601String()],
-            'monitors' => $monitors->map(fn (Monitor $monitor) => ['id' => $monitor->id, 'name' => $monitor->name])->values(),
+            'monitors' => $monitorOptions->map(fn (Monitor $monitor) => ['id' => $monitor->id, 'name' => $monitor->name])->values(),
             'stats' => [
                 'activeMonitors' => $monitors->where('is_enabled', true)->count(),
                 'totalMonitors' => $monitors->count(),

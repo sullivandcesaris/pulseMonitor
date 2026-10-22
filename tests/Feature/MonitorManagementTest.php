@@ -34,6 +34,7 @@ class MonitorManagementTest extends TestCase
 
         $response->assertRedirect(route('monitors.index'));
         $this->assertDatabaseHas('monitors', ['organization_id' => $organization->id, 'name' => 'Public API']);
+        $this->assertNotNull(Monitor::query()->where('name', 'Public API')->value('next_check_at'));
     }
 
     public function test_user_cannot_access_another_organizations_monitor(): void
@@ -55,6 +56,7 @@ class MonitorManagementTest extends TestCase
         ])->assertRedirect(route('monitors.index'));
 
         $this->assertDatabaseHas('monitors', ['id' => $monitor->id, 'name' => 'Updated monitor', 'method' => 'HEAD']);
+        $this->assertNotNull($monitor->fresh()->next_check_at);
 
         $this->actingAs($user)->delete(route('monitors.destroy', $monitor))->assertRedirect(route('monitors.index'));
         $this->assertDatabaseMissing('monitors', ['id' => $monitor->id]);

@@ -45,7 +45,9 @@ class MonitorController extends Controller
     public function store(MonitorRequest $request): RedirectResponse
     {
         $organization = $request->user()->organizations()->firstOrFail();
-        $organization->monitors()->create($request->validated());
+        $attributes = $request->validated();
+        $attributes['next_check_at'] = now()->addSeconds((int) $attributes['interval_seconds']);
+        $organization->monitors()->create($attributes);
 
         return to_route('monitors.index')->with('success', 'Monitor created successfully.');
     }
@@ -59,7 +61,9 @@ class MonitorController extends Controller
 
     public function update(MonitorRequest $request, Monitor $monitor): RedirectResponse
     {
-        $monitor->update($request->validated());
+        $attributes = $request->validated();
+        $attributes['next_check_at'] = now()->addSeconds((int) $attributes['interval_seconds']);
+        $monitor->update($attributes);
 
         return to_route('monitors.index')->with('success', 'Monitor updated successfully.');
     }

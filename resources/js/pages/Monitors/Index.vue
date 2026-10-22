@@ -33,7 +33,7 @@ onUnmounted(() => {
 
 const nextCheckLabel = (monitor: Monitor) => {
     if (!monitor.is_enabled) return isPortuguese.value ? 'Pausado' : 'Paused';
-    if (!monitor.next_check_at) return isPortuguese.value ? 'Aguardando primeiro teste' : 'Waiting for first check';
+    if (!monitor.next_check_at) return isPortuguese.value ? 'Agendamento pendente' : 'Schedule pending';
 
     const remainingSeconds = Math.max(0, Math.ceil((new Date(monitor.next_check_at).getTime() - now.value) / 1000));
     if (remainingSeconds === 0) return isPortuguese.value ? 'A qualquer momento' : 'Due now';

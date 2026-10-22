@@ -3,6 +3,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/composables/useLanguage';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
@@ -20,6 +21,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
 });
+const { isPortuguese } = useLanguage();
 
 const submit = () => {
     form.post(route('password.store'), {
@@ -31,19 +33,22 @@ const submit = () => {
 </script>
 
 <template>
-    <AuthLayout title="Reset password" description="Please enter your new password below">
-        <Head title="Reset password" />
+    <AuthLayout
+        :title="isPortuguese ? 'Redefinir senha' : 'Reset password'"
+        :description="isPortuguese ? 'Digite sua nova senha abaixo' : 'Please enter your new password below'"
+    >
+        <Head :title="isPortuguese ? 'Redefinir senha' : 'Reset password'" />
 
         <form @submit.prevent="submit">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Email</Label>
+                    <Label for="email">{{ isPortuguese ? 'E-mail' : 'Email' }}</Label>
                     <Input id="email" type="email" name="email" autocomplete="email" v-model="form.email" class="mt-1 block w-full" readonly />
                     <InputError :message="form.errors.email" class="mt-2" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Password</Label>
+                    <Label for="password">{{ isPortuguese ? 'Senha' : 'Password' }}</Label>
                     <Input
                         id="password"
                         type="password"
@@ -52,13 +57,13 @@ const submit = () => {
                         v-model="form.password"
                         class="mt-1 block w-full"
                         autofocus
-                        placeholder="Password"
+                        :placeholder="isPortuguese ? 'Senha' : 'Password'"
                     />
                     <InputError :message="form.errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation"> Confirm Password </Label>
+                    <Label for="password_confirmation">{{ isPortuguese ? 'Confirmar senha' : 'Confirm Password' }}</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -66,14 +71,14 @@ const submit = () => {
                         autocomplete="new-password"
                         v-model="form.password_confirmation"
                         class="mt-1 block w-full"
-                        placeholder="Confirm password"
+                        :placeholder="isPortuguese ? 'Confirme a senha' : 'Confirm password'"
                     />
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
                 <Button type="submit" class="mt-4 w-full" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Reset password
+                    {{ isPortuguese ? 'Redefinir senha' : 'Reset password' }}
                 </Button>
             </div>
         </form>

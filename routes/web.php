@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MonitorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,7 +13,7 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('monitors', fn () => Inertia::render('Monitors/Index'))->name('monitors.index');
+    Route::resource('monitors', MonitorController::class)->except(['show']);
     Route::get('incidents', fn () => Inertia::render('Incidents/Index'))->name('incidents.index');
 });
 

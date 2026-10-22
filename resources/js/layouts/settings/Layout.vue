@@ -2,30 +2,42 @@
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useLanguage } from '@/composables/useLanguage';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        href: '/settings/profile',
-    },
-    {
-        title: 'Password',
-        href: '/settings/password',
-    },
-    {
-        title: 'Appearance',
-        href: '/settings/appearance',
-    },
-];
+const { isPortuguese } = useLanguage();
+const labels = computed(() =>
+    isPortuguese.value
+        ? {
+              settings: 'Configurações',
+              description: 'Gerencie seu perfil e as configurações da conta',
+              profile: 'Perfil',
+              password: 'Senha',
+              appearance: 'Aparência',
+          }
+        : {
+              settings: 'Settings',
+              description: 'Manage your profile and account settings',
+              profile: 'Profile',
+              password: 'Password',
+              appearance: 'Appearance',
+          },
+);
+
+const sidebarNavItems = computed<NavItem[]>(() => [
+    { title: labels.value.profile, href: '/settings/profile' },
+    { title: labels.value.password, href: '/settings/password' },
+    { title: labels.value.appearance, href: '/settings/appearance' },
+]);
 
 const currentPath = window.location.pathname;
 </script>
 
 <template>
     <div class="px-4 py-6">
-        <Heading title="Settings" description="Manage your profile and account settings" />
+        <Heading :title="labels.settings" :description="labels.description" />
 
         <div class="flex flex-col space-y-8 md:space-y-0 lg:flex-row lg:space-x-12 lg:space-y-0">
             <aside class="w-full max-w-xl lg:w-48">

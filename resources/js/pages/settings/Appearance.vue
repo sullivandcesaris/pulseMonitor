@@ -8,15 +8,13 @@ import { type BreadcrumbItem } from '@/types';
 import { useLanguage } from '@/composables/useLanguage';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { computed } from 'vue';
 
-const { language, setLanguage } = useLanguage();
+const { language, isPortuguese, setLanguage } = useLanguage();
 
-const breadcrumbItems: BreadcrumbItem[] = [
-    {
-        title: 'Appearance settings',
-        href: '/settings/appearance',
-    },
-];
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { title: isPortuguese.value ? 'Configurações de aparência' : 'Appearance settings', href: '/settings/appearance' },
+]);
 </script>
 
 <template>
@@ -25,11 +23,16 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
         <SettingsLayout>
             <div class="space-y-6">
-                <HeadingSmall title="Appearance settings" description="Update your account's appearance settings" />
+                <HeadingSmall
+                    :title="isPortuguese ? 'Configurações de aparência' : 'Appearance settings'"
+                    :description="isPortuguese ? 'Atualize as configurações visuais da sua conta' : 'Update your account\'s appearance settings'"
+                />
                 <AppearanceTabs />
                 <div class="rounded-xl border bg-card p-5 shadow-sm">
                     <h2 class="font-semibold">Language / Idioma</h2>
-                    <p class="mt-1 text-sm text-muted-foreground">Choose the language used throughout the application.</p>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        {{ isPortuguese ? 'Escolha o idioma usado em toda a aplicação.' : 'Choose the language used throughout the application.' }}
+                    </p>
                     <div class="mt-4 flex gap-2">
                         <button
                             type="button"

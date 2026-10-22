@@ -10,7 +10,9 @@ import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/composables/useLanguage';
 import { type BreadcrumbItem } from '@/types';
+import { computed } from 'vue';
 
 interface Props {
     className?: string;
@@ -18,15 +20,12 @@ interface Props {
 
 defineProps<Props>();
 
-const breadcrumbItems: BreadcrumbItem[] = [
-    {
-        title: 'Password settings',
-        href: '/settings/password',
-    },
-];
-
 const passwordInput = ref<HTMLInputElement>();
 const currentPasswordInput = ref<HTMLInputElement>();
+const { isPortuguese } = useLanguage();
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { title: isPortuguese.value ? 'Configurações de senha' : 'Password settings', href: '/settings/password' },
+]);
 
 const form = useForm({
     current_password: '',
@@ -59,15 +58,22 @@ const updatePassword = () => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Profile settings" />
+        <Head :title="isPortuguese ? 'Configurações de senha' : 'Password settings'" />
 
         <SettingsLayout>
             <div class="space-y-6">
-                <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
+                <HeadingSmall
+                    :title="isPortuguese ? 'Atualizar senha' : 'Update password'"
+                    :description="
+                        isPortuguese
+                            ? 'Use uma senha longa e aleatória para manter sua conta segura'
+                            : 'Ensure your account is using a long, random password to stay secure'
+                    "
+                />
 
                 <form @submit.prevent="updatePassword" class="space-y-6">
                     <div class="grid gap-2">
-                        <Label for="current_password">Current Password</Label>
+                        <Label for="current_password">{{ isPortuguese ? 'Senha atual' : 'Current Password' }}</Label>
                         <Input
                             id="current_password"
                             ref="currentPasswordInput"
@@ -75,13 +81,13 @@ const updatePassword = () => {
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="current-password"
-                            placeholder="Current password"
+                            :placeholder="isPortuguese ? 'Senha atual' : 'Current password'"
                         />
                         <InputError :message="form.errors.current_password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">New password</Label>
+                        <Label for="password">{{ isPortuguese ? 'Nova senha' : 'New password' }}</Label>
                         <Input
                             id="password"
                             ref="passwordInput"
@@ -89,26 +95,26 @@ const updatePassword = () => {
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="new-password"
-                            placeholder="New password"
+                            :placeholder="isPortuguese ? 'Nova senha' : 'New password'"
                         />
                         <InputError :message="form.errors.password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation">Confirm password</Label>
+                        <Label for="password_confirmation">{{ isPortuguese ? 'Confirmar senha' : 'Confirm password' }}</Label>
                         <Input
                             id="password_confirmation"
                             v-model="form.password_confirmation"
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="new-password"
-                            placeholder="Confirm password"
+                            :placeholder="isPortuguese ? 'Confirme a senha' : 'Confirm password'"
                         />
                         <InputError :message="form.errors.password_confirmation" />
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing">Save password</Button>
+                        <Button :disabled="form.processing">{{ isPortuguese ? 'Salvar senha' : 'Save password' }}</Button>
 
                         <TransitionRoot
                             :show="form.recentlySuccessful"
@@ -117,7 +123,7 @@ const updatePassword = () => {
                             leave="transition ease-in-out"
                             leave-to="opacity-0"
                         >
-                            <p class="text-sm text-neutral-600">Saved</p>
+                            <p class="text-sm text-neutral-600">{{ isPortuguese ? 'Salvo' : 'Saved' }}</p>
                         </TransitionRoot>
                     </div>
                 </form>

@@ -31,8 +31,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Week 4 incident detection and recovery are implemented with configurable failure thresholds, idempotent transitions, recovery duration tracking, and automated tests.
 - Week 5 dashboard, analytics, and notification workflows are implemented with live monitoring data, selectable periods, response-time charts, filters, incident history, and queued email delivery tracking.
 - Week 6 scalability foundations are implemented with separate monitoring/notification queues, independent workers, atomic due-monitor claims, overlap protection, historical pagination, and documented query strategy.
+- Week 6 benchmarks now cover 100, 1,000, and 10,000-monitor scenarios with database timing, queue throughput/waiting, CPU, memory, and bottleneck documentation.
 
-**Next priority:** add representative load scenarios and benchmark queue/database/memory performance before completing Week 6.
+**Next priority:** begin Week 7 observability, security, and operational reliability work.
 
 ---
 
@@ -320,10 +321,10 @@ Each monitor should support:
 
 - [x] Separate monitoring jobs from notification jobs.
 - [x] Configure independent queue workers.
-- [ ] Test multiple workers.
+- [x] Test multiple workers.
 - [x] Implement concurrency limits.
 - [x] Prevent overlapping checks.
-- [ ] Evaluate queue processing throughput.
+- [x] Evaluate queue processing throughput.
 - [x] Implement backpressure strategies.
 - [x] Avoid scheduling more work than the system can process.
 
@@ -331,24 +332,24 @@ Each monitor should support:
 
 - [x] Analyze frequently executed queries.
 - [x] Add indexes based on actual query patterns.
-- [ ] Investigate slow queries.
+- [x] Investigate slow queries.
 - [x] Implement pagination for historical data.
-- [ ] Evaluate caching strategies.
+- [x] Evaluate caching strategies.
 - [x] Prevent N+1 query problems.
-- [ ] Define long-term monitoring data retention.
+- [x] Define long-term monitoring data retention.
 
 ### Load Testing
 
-- [ ] Create a load-testing scenario.
-- [ ] Simulate 100 registered monitors.
-- [ ] Simulate 1,000 registered monitors.
-- [ ] Simulate 10,000 registered monitors.
-- [ ] Measure queue throughput.
-- [ ] Measure queue waiting time.
-- [ ] Measure database performance.
-- [ ] Measure memory and CPU consumption.
-- [ ] Identify system bottlenecks.
-- [ ] Document performance improvements.
+- [x] Create a load-testing scenario.
+- [x] Simulate 100 registered monitors.
+- [x] Simulate 1,000 registered monitors.
+- [x] Simulate 10,000 registered monitors.
+- [x] Measure queue throughput.
+- [x] Measure queue waiting time.
+- [x] Measure database performance.
+- [x] Measure memory and CPU consumption.
+- [x] Identify system bottlenecks.
+- [x] Document performance improvements.
 
 **Deliverable:** Performance benchmarks and documented scaling strategies showing how PulseMonitor behaves under increasing workloads.
 

@@ -19,6 +19,7 @@ type Monitor = {
 defineProps<{ monitors: Monitor[] }>();
 const { isPortuguese } = useLanguage();
 const now = ref(Date.now());
+const fallbackNextChecks = new Map<number, number>();
 let countdownTimer: number | undefined;
 
 onMounted(() => {
@@ -33,10 +34,17 @@ onUnmounted(() => {
 
 const nextCheckLabel = (monitor: Monitor) => {
     if (!monitor.is_enabled) return isPortuguese.value ? 'Pausado' : 'Paused';
-    if (!monitor.next_check_at) return isPortuguese.value ? 'Agendamento pendente' : 'Schedule pending';
 
-    const remainingSeconds = Math.max(0, Math.ceil((new Date(monitor.next_check_at).getTime() - now.value) / 1000));
-    if (remainingSeconds === 0) return isPortuguese.value ? 'A qualquer momento' : 'Due now';
+    const targetTime = monitor.next_check_at
+        ? new Date(monitor.next_check_at).getTime()
+        : (fallbackNextChecks.get(monitor.id) ??
+          (() => {
+              const fallback = now.value + monitor.interval_seconds * 1000;
+              fallbackNextChecks.set(monitor.id, fallback);
+              return fallback;
+          })());
+    const remainingSeconds = Math.max(0, Math.ceil((targetTime - now.value) / 1000));
+    if (remainingSeconds === 0) return isPortuguese.value ? 'Agora · 0s' : 'Now · 0s';
 
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;

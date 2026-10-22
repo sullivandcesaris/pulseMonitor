@@ -29,9 +29,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Week 2 domain foundations are in place: organizations, memberships, monitors, monitor checks, incidents, relationships, indexes, factories, seed data, and a relationship diagram.
 - Week 3 HTTP monitoring is implemented with queued checks, scheduler dispatch, SSRF protections, outbound port restrictions, and a dedicated Redis queue worker.
 - Week 4 incident detection and recovery are implemented with configurable failure thresholds, idempotent transitions, recovery duration tracking, and automated tests.
-- Week 5 dashboard foundations are implemented with live monitor/check/incident data, 24-hour uptime and response-time metrics, recent checks, and unknown-data states.
+- Week 5 dashboard, analytics, and notification workflows are implemented with live monitoring data, selectable periods, response-time charts, filters, incident history, and queued email delivery tracking.
 
-**Next priority:** complete the Week 5 response-time chart, monitor filters, selectable availability periods, and notification workflows.
+**Next priority:** validate the Week 5 flows in the browser, then begin Week 6 scalability and performance work.
 
 ---
 
@@ -275,35 +275,35 @@ Each monitor should support:
 - [x] Display last check time.
 - [x] Display HTTP response time.
 - [x] Display recent monitoring results.
-- [ ] Create response-time charts.
-- [ ] Implement monitor filters.
+- [x] Create response-time charts.
+- [x] Implement monitor filters.
 - [x] Create incident history screens.
 
 ### Availability Metrics
 
 - [x] Define how uptime is calculated.
-- [ ] Calculate uptime percentage for selected periods.
+- [x] Calculate uptime percentage for selected periods.
 - [x] Calculate average response time.
-- [ ] Identify periods without monitoring data.
+- [x] Identify periods without monitoring data.
 - [x] Distinguish unknown status from confirmed downtime.
 - [x] Display monitoring history.
 
 ### Notifications
 
-- [ ] Implement email notifications.
-- [ ] Send notifications when incidents are opened.
-- [ ] Send notifications when services recover.
-- [ ] Prevent duplicate notifications.
-- [ ] Record notification delivery attempts.
-- [ ] Handle notification failures.
-- [ ] Allow users to enable or disable alerts.
+- [x] Implement email notifications.
+- [x] Send notifications when incidents are opened.
+- [x] Send notifications when services recover.
+- [x] Prevent duplicate notifications.
+- [x] Record notification delivery attempts.
+- [x] Handle notification failures.
+- [x] Allow users to enable or disable alerts.
 
 ### User Experience
 
 - [x] Create responsive dashboard layouts.
-- [ ] Add loading and error states.
+- [x] Add loading and error states.
 - [x] Provide clear incident information.
-- [ ] Add confirmation messages for user actions.
+- [x] Add confirmation messages for user actions.
 
 **Deliverable:** Customers can register services, monitor availability, view incidents, and receive outage notifications.
 

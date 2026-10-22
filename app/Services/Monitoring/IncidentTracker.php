@@ -2,6 +2,7 @@
 
 namespace App\Services\Monitoring;
 
+use App\Jobs\SendIncidentNotification;
 use App\Models\Monitor;
 use App\Models\MonitorCheck;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,10 @@ class IncidentTracker
 {
     public function process(MonitorCheck $check): void
     {
-        DB::transaction(function () use ($check): void {
+        $notificationEvent = null;
+        $incidentId = null;
+
+        DB::transaction(function () use ($check, &$notificationEvent, &$incidentId): void {
             $monitor = Monitor::query()->lockForUpdate()->findOrFail($check->monitor_id);
             $latestCheck = $monitor->checks()->latest('checked_at')->latest('id')->first();
 
@@ -28,6 +32,8 @@ class IncidentTracker
                         'resolved_at' => $resolvedAt,
                         'duration_seconds' => max(0, $incident->started_at->diffInSeconds($resolvedAt)),
                     ]);
+                    $notificationEvent = 'recovered';
+                    $incidentId = $incident->id;
                 }
 
                 return;
@@ -37,14 +43,25 @@ class IncidentTracker
             if ($incident) {
                 $incident->update(['failure_count' => $failureStreak, 'last_error' => $check->error_message]);
             } elseif ($failureStreak >= config('monitoring.failure_threshold')) {
-                $monitor->incidents()->create([
+                $incident = $monitor->incidents()->create([
                     'status' => 'open',
                     'failure_count' => $failureStreak,
                     'last_error' => $check->error_message,
                     'started_at' => $check->checked_at,
                 ]);
+                $notificationEvent = 'opened';
+                $incidentId = $incident->id;
             }
         });
+
+        if ($notificationEvent && $incidentId) {
+            $monitor = Monitor::with('organization.users')->findOrFail($check->monitor_id);
+            foreach ($monitor->organization->users as $user) {
+                if ($user->alert_notifications_enabled) {
+                    SendIncidentNotification::dispatch($incidentId, $user->id, $notificationEvent)->afterCommit();
+                }
+            }
+        }
     }
 
     private function failureStreak(Monitor $monitor): int

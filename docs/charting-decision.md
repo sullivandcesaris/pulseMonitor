@@ -2,7 +2,7 @@
 
 **Decision date:** 2026-10-22  
 **Selected library:** Apache ECharts  
-**Planned implementation:** Week 5, when historical monitor data and dashboard analytics are available.
+**Implementation:** Week 5 dashboard response-time history is implemented with ECharts and Vue ECharts using the tree-shakable core API.
 
 ## Evaluation criteria
 
@@ -32,7 +32,7 @@ We will use Apache ECharts with the tree-shakable core API and the SVG renderer 
 
 Charts must provide a textual summary or table alongside the visual. ECharts ARIA support will be enabled where appropriate, and color will not be the only status signal.
 
-This is an architectural choice for the planned Week 5 analytics work. The package should be added when the first real chart is implemented, not during the domain-modeling phase.
+This is an architectural choice for the Week 5 analytics work. The package was added when the first real chart was implemented, after historical monitoring data became available.
 
 ## References
 

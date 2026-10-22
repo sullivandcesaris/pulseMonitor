@@ -38,6 +38,7 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+    alert_notifications_enabled: boolean;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

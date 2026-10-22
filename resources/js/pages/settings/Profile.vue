@@ -33,6 +33,7 @@ const user = page.props.auth.user as User;
 const form = useForm({
     name: user.name,
     email: user.email,
+    alert_notifications_enabled: user.alert_notifications_enabled,
 });
 
 const submit = () => {
@@ -86,6 +87,19 @@ const submit = () => {
 
                         <div v-if="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-green-600">
                             A new verification link has been sent to your email address.
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <input
+                            id="alert_notifications_enabled"
+                            v-model="form.alert_notifications_enabled"
+                            type="checkbox"
+                            class="mt-1 size-4 rounded border-input"
+                        />
+                        <div>
+                            <Label for="alert_notifications_enabled">Incident email notifications</Label>
+                            <p class="text-sm text-muted-foreground">Receive an email when a service goes down or recovers.</p>
                         </div>
                     </div>
 

@@ -14,12 +14,20 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $organizationIds = $request->user()->organizations()->pluck('organizations.id');
-        $periodStart = now()->subDay();
+        $periodKey = $request->string('period')->toString();
+        $periodHours = match ($periodKey) {
+            '6h' => 6,
+            '7d' => 24 * 7,
+            default => 24,
+        };
+        $selectedMonitorId = $request->integer('monitor_id') ?: null;
         $monitors = Monitor::query()
             ->whereIn('organization_id', $organizationIds)
+            ->when($selectedMonitorId, fn ($query) => $query->whereKey($selectedMonitorId))
             ->with('latestCheck')
             ->orderBy('name')
             ->get();
+        $periodStart = now()->subHours($periodHours);
         $checks = MonitorCheck::query()
             ->whereIn('monitor_id', $monitors->modelKeys())
             ->where('checked_at', '>=', $periodStart)
@@ -31,7 +39,8 @@ class DashboardController extends Controller
         $upChecks = $checks->where('status', 'up')->count();
 
         return Inertia::render('Dashboard', [
-            'period' => ['label' => 'Last 24 hours', 'since' => $periodStart->toIso8601String()],
+            'period' => ['key' => $periodHours === 6 ? '6h' : ($periodHours === 24 ? '24h' : '7d'), 'label' => $periodHours === 6 ? 'Last 6 hours' : ($periodHours === 24 ? 'Last 24 hours' : 'Last 7 days'), 'since' => $periodStart->toIso8601String()],
+            'monitors' => $monitors->map(fn (Monitor $monitor) => ['id' => $monitor->id, 'name' => $monitor->name])->values(),
             'stats' => [
                 'activeMonitors' => $monitors->where('is_enabled', true)->count(),
                 'totalMonitors' => $monitors->count(),
@@ -56,6 +65,11 @@ class DashboardController extends Controller
                 'checkedAt' => $check->checked_at?->toIso8601String(),
                 'responseTime' => $check->response_time_ms,
             ]),
+            'coverage' => [
+                'checks' => $totalChecks,
+                'expectedChecks' => $monitors->sum(fn (Monitor $monitor) => max(1, (int) ceil($periodStart->diffInSeconds(now()) / $monitor->interval_seconds))),
+                'hasData' => $totalChecks > 0,
+            ],
         ]);
     }
 }

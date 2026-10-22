@@ -26,7 +26,21 @@ services:
             - redis
     queue:
         image: 'sail-8.5/app'
-        command: 'php artisan queue:work redis --sleep=3 --tries=2 --timeout=120 --max-time=3600'
+        command: 'php artisan queue:work redis --queue=monitoring --sleep=3 --tries=3 --timeout=120 --max-time=3600'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - pgsql
+            - redis
+        restart: unless-stopped
+    notifications:
+        image: 'sail-8.5/app'
+        command: 'php artisan queue:work redis --queue=notifications --sleep=3 --tries=3 --timeout=120 --max-time=3600'
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1

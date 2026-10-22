@@ -13,7 +13,9 @@ type Incident = {
     startedAt: string | null;
     durationSeconds: number | null;
 };
-defineProps<{ incidents: Incident[] }>();
+const props = defineProps<{
+    incidents: { data: Incident[]; current_page: number; last_page: number; from: number | null; to: number | null; total: number };
+}>();
 const breadcrumbs = [{ title: 'Incidents', href: '/incidents' }];
 const formatDate = (value: string | null) => (value ? new Date(value).toLocaleString() : '—');
 const formatDuration = (seconds: number | null) => {
@@ -31,8 +33,8 @@ const formatDuration = (seconds: number | null) => {
                 <h1 class="text-2xl font-semibold tracking-tight">Incidents</h1>
                 <p class="text-muted-foreground">Review outages and recovery history for your services.</p>
             </div>
-            <div v-if="incidents.length" class="overflow-hidden rounded-xl border bg-card shadow-sm">
-                <div v-for="incident in incidents" :key="incident.id" class="border-b p-5 last:border-b-0">
+            <div v-if="props.incidents.data.length" class="overflow-hidden rounded-xl border bg-card shadow-sm">
+                <div v-for="incident in props.incidents.data" :key="incident.id" class="border-b p-5 last:border-b-0">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div class="flex gap-3">
                             <AlertTriangle v-if="incident.status === 'open'" class="mt-0.5 size-5 text-amber-600" /><CheckCircle2
@@ -56,6 +58,25 @@ const formatDuration = (seconds: number | null) => {
                         <p><span class="font-medium text-foreground">Failures:</span> {{ incident.failureCount }}</p>
                     </div>
                     <p v-if="incident.lastError" class="mt-3 rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">{{ incident.lastError }}</p>
+                </div>
+                <div v-if="props.incidents.last_page > 1" class="flex items-center justify-between border-t p-4 text-sm">
+                    <span class="text-muted-foreground"
+                        >Showing {{ props.incidents.from }}–{{ props.incidents.to }} of {{ props.incidents.total }}</span
+                    >
+                    <div class="flex gap-2">
+                        <a
+                            v-if="props.incidents.current_page > 1"
+                            :href="'/incidents?page=' + (props.incidents.current_page - 1)"
+                            class="rounded border px-3 py-1 hover:bg-muted"
+                            >Previous</a
+                        >
+                        <a
+                            v-if="props.incidents.current_page < props.incidents.last_page"
+                            :href="'/incidents?page=' + (props.incidents.current_page + 1)"
+                            class="rounded border px-3 py-1 hover:bg-muted"
+                            >Next</a
+                        >
+                    </div>
                 </div>
             </div>
             <div v-else class="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-card p-8 text-center">

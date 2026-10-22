@@ -61,8 +61,8 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Incidents/Index', false)
-            ->has('incidents', 1)
-            ->where('incidents.0.lastError', 'Owned outage'));
+            ->has('incidents.data', 1)
+            ->where('incidents.data.0.lastError', 'Owned outage'));
     }
 
     /** @return array{User, Organization} */

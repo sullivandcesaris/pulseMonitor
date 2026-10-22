@@ -18,9 +18,9 @@ class IncidentController extends Controller
                 ->whereHas('monitor', fn ($query) => $query->whereIn('organization_id', $organizationIds))
                 ->with('monitor:id,name,target_url')
                 ->latest('started_at')
-                ->limit(50)
-                ->get()
-                ->map(fn (Incident $incident) => [
+                ->paginate(20)
+                ->withQueryString()
+                ->through(fn (Incident $incident) => [
                     'id' => $incident->id,
                     'monitorName' => $incident->monitor?->name,
                     'targetUrl' => $incident->monitor?->target_url,

@@ -19,7 +19,10 @@ class CheckMonitor implements ShouldQueue
 
     public int $tries = 3;
 
-    public function __construct(public Monitor $monitor) {}
+    public function __construct(public Monitor $monitor)
+    {
+        $this->onQueue('monitoring');
+    }
 
     public function handle(MonitorChecker $checker): void
     {

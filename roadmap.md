@@ -30,8 +30,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Week 3 HTTP monitoring is implemented with queued checks, scheduler dispatch, SSRF protections, outbound port restrictions, and a dedicated Redis queue worker.
 - Week 4 incident detection and recovery are implemented with configurable failure thresholds, idempotent transitions, recovery duration tracking, and automated tests.
 - Week 5 dashboard, analytics, and notification workflows are implemented with live monitoring data, selectable periods, response-time charts, filters, incident history, and queued email delivery tracking.
+- Week 6 scalability foundations are implemented with separate monitoring/notification queues, independent workers, atomic due-monitor claims, overlap protection, historical pagination, and documented query strategy.
 
-**Next priority:** validate the Week 5 flows in the browser, then begin Week 6 scalability and performance work.
+**Next priority:** add representative load scenarios and benchmark queue/database/memory performance before completing Week 6.
 
 ---
 
@@ -317,23 +318,23 @@ Each monitor should support:
 
 ### Queue Scalability
 
-- [ ] Separate monitoring jobs from notification jobs.
-- [ ] Configure independent queue workers.
+- [x] Separate monitoring jobs from notification jobs.
+- [x] Configure independent queue workers.
 - [ ] Test multiple workers.
-- [ ] Implement concurrency limits.
-- [ ] Prevent overlapping checks.
+- [x] Implement concurrency limits.
+- [x] Prevent overlapping checks.
 - [ ] Evaluate queue processing throughput.
-- [ ] Implement backpressure strategies.
-- [ ] Avoid scheduling more work than the system can process.
+- [x] Implement backpressure strategies.
+- [x] Avoid scheduling more work than the system can process.
 
 ### Database Performance
 
-- [ ] Analyze frequently executed queries.
-- [ ] Add indexes based on actual query patterns.
+- [x] Analyze frequently executed queries.
+- [x] Add indexes based on actual query patterns.
 - [ ] Investigate slow queries.
-- [ ] Implement pagination for historical data.
+- [x] Implement pagination for historical data.
 - [ ] Evaluate caching strategies.
-- [ ] Prevent N+1 query problems.
+- [x] Prevent N+1 query problems.
 - [ ] Define long-term monitoring data retention.
 
 ### Load Testing

@@ -20,7 +20,10 @@ class SendIncidentNotification implements ShouldQueue
 
     public int $tries = 3;
 
-    public function __construct(public int $incidentId, public int $userId, public string $event) {}
+    public function __construct(public int $incidentId, public int $userId, public string $event)
+    {
+        $this->onQueue('notifications');
+    }
 
     public function handle(): void
     {

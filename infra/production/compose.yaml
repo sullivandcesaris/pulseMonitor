@@ -1,0 +1,142 @@
+services:
+    app:
+        build:
+            context: ../..
+            dockerfile: infra/production/Dockerfile
+        image: pulsemonitor:production
+        env_file:
+            - path: ../../.env.production
+              required: false
+        environment:
+            DB_HOST: pgsql
+            REDIS_HOST: redis
+        expose:
+            - "8080"
+        depends_on:
+            pgsql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+    scheduler:
+        image: pulsemonitor:production
+        env_file:
+            - path: ../../.env.production
+              required: false
+        command: php artisan schedule:work
+        environment:
+            DB_HOST: pgsql
+            REDIS_HOST: redis
+        depends_on:
+            pgsql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+    queue-monitoring:
+        image: pulsemonitor:production
+        env_file:
+            - path: ../../.env.production
+              required: false
+        command: php artisan queue:work redis --queue=monitoring --sleep=3 --tries=3 --timeout=120 --max-time=3600
+        environment:
+            DB_HOST: pgsql
+            REDIS_HOST: redis
+        depends_on:
+            pgsql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+    queue-notifications:
+        image: pulsemonitor:production
+        env_file:
+            - path: ../../.env.production
+              required: false
+        command: php artisan queue:work redis --queue=notifications --sleep=3 --tries=3 --timeout=120 --max-time=3600
+        environment:
+            DB_HOST: pgsql
+            REDIS_HOST: redis
+        depends_on:
+            pgsql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+    pgsql:
+        image: postgres:18-alpine
+        env_file:
+            - path: ../../.env.production
+              required: false
+        environment:
+            POSTGRES_DB: ${DB_DATABASE:-pulsemonitor}
+            POSTGRES_USER: ${DB_USERNAME:-pulsemonitor}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-change-me}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+    redis:
+        image: redis:alpine
+        command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-change-me}
+        env_file:
+            - path: ../../.env.production
+              required: false
+        volumes:
+            - redis-data:/data
+        healthcheck:
+            test: [CMD-SHELL, "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+    caddy:
+        image: caddy:2-alpine
+        env_file:
+            - path: ../../.env.production
+              required: false
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy-data:/data
+            - caddy-config:/config
+        depends_on:
+            app:
+                condition: service_started
+        restart: unless-stopped
+        networks:
+            - pulsemonitor
+
+networks:
+    pulsemonitor:
+        driver: bridge
+
+volumes:
+    postgres-data:
+    redis-data:
+    caddy-data:
+    caddy-config:

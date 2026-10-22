@@ -47,6 +47,8 @@ PulseMonitor starts as a modular monolith. The application, domain services, que
 
 See [docs/architecture.md](docs/architecture.md) for the system context, module boundaries, data flow, and key decisions.
 
+See [docs/deployment.md](docs/deployment.md) for the production Compose layout, release procedure, HTTPS, workers, scheduler, and backup runbook.
+
 See [docs/frontend.md](docs/frontend.md) for Vue structure, UI conventions, design tokens, and frontend quality checks.
 
 ## Local development with Laravel Sail
@@ -78,7 +80,9 @@ Monitoring creates outbound requests based on user input, so target validation i
 
 ## Project status
 
-The repository is in the foundation phase. The product decisions and architecture are documented; Laravel application scaffolding is the next implementation step.
+Weeks 1–7 are implemented and verified locally. Week 8 production artifacts
+are included, while deployment to a public host, DNS, SMTP, backups, and
+portfolio publication require environment-specific credentials and approval.
 
 ## License
 

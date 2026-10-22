@@ -33,8 +33,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Week 6 scalability foundations are implemented with separate monitoring/notification queues, independent workers, atomic due-monitor claims, overlap protection, historical pagination, and documented query strategy.
 - Week 6 benchmarks now cover 100, 1,000, and 10,000-monitor scenarios with database timing, queue throughput/waiting, CPU, memory, and bottleneck documentation.
 - Week 7 observability and operational controls are implemented with structured logs, correlation IDs, Horizon/Sentry integrations, Prometheus/Grafana definitions, health checks, security controls, and recovery procedures.
+- Week 8 production artifacts are prepared with a release image, Compose services for the app, scheduler, workers, PostgreSQL, Redis, and Caddy, production environment guidance, and a backup/recovery runbook.
 
-**Next priority:** validate the Week 7 operational integrations in the deployment environment, then begin Week 8 production deployment.
+**Next priority:** deploy the Week 8 release to a public host, configure DNS/SMTP/backups, and publish the demonstration and case study.
 
 ---
 
@@ -409,12 +410,12 @@ Each monitor should support:
 
 - [ ] Deploy the Laravel application.
 - [ ] Deploy PostgreSQL.
-- [ ] Configure Redis.
-- [ ] Configure queue workers.
-- [ ] Configure Laravel Scheduler.
-- [ ] Configure HTTPS.
-- [ ] Configure production environment variables.
-- [ ] Configure database backups.
+- [x] Configure Redis.
+- [x] Configure queue workers.
+- [x] Configure Laravel Scheduler.
+- [x] Configure HTTPS.
+- [x] Configure production environment variables.
+- [x] Configure database backups.
 - [ ] Verify background jobs in production.
 - [ ] Verify monitoring execution.
 - [ ] Verify incident detection.
@@ -422,17 +423,17 @@ Each monitor should support:
 
 ### Technical Documentation
 
-- [ ] Complete the README.
-- [ ] Document local installation.
-- [ ] Document the application architecture.
-- [ ] Add an architecture diagram.
-- [ ] Document major technical decisions.
-- [ ] Explain why a modular monolith was selected.
-- [ ] Document queue and worker design.
-- [ ] Document the database structure.
-- [ ] Document SSRF security decisions.
-- [ ] Document monitoring limitations.
-- [ ] Include load-testing results.
+- [x] Complete the README.
+- [x] Document local installation.
+- [x] Document the application architecture.
+- [x] Add an architecture diagram.
+- [x] Document major technical decisions.
+- [x] Explain why a modular monolith was selected.
+- [x] Document queue and worker design.
+- [x] Document the database structure.
+- [x] Document SSRF security decisions.
+- [x] Document monitoring limitations.
+- [x] Include load-testing results.
 
 ### Portfolio
 

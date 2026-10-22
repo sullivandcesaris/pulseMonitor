@@ -29,6 +29,7 @@ class MonitorController extends Controller
                     'method' => $monitor->method,
                     'interval_seconds' => $monitor->interval_seconds,
                     'is_enabled' => $monitor->is_enabled,
+                    'last_checked_at' => $monitor->last_checked_at?->toIso8601String(),
                     'next_check_at' => $monitor->next_check_at?->toIso8601String(),
                     'organization' => ['name' => $monitor->organization?->name],
                 ]),

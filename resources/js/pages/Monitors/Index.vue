@@ -12,6 +12,7 @@ type Monitor = {
     method: 'GET' | 'HEAD';
     interval_seconds: number;
     is_enabled: boolean;
+    last_checked_at: string | null;
     next_check_at: string | null;
     organization: { name: string };
 };
@@ -21,15 +22,20 @@ const { isPortuguese } = useLanguage();
 const now = ref(Date.now());
 const fallbackNextChecks = new Map<number, number>();
 let countdownTimer: number | undefined;
+let refreshTimer: number | undefined;
 
 onMounted(() => {
     countdownTimer = window.setInterval(() => {
         now.value = Date.now();
     }, 1000);
+    refreshTimer = window.setInterval(() => {
+        router.reload({ only: ['monitors'] });
+    }, 5000);
 });
 
 onUnmounted(() => {
     if (countdownTimer) window.clearInterval(countdownTimer);
+    if (refreshTimer) window.clearInterval(refreshTimer);
 });
 
 const nextCheckLabel = (monitor: Monitor) => {
@@ -44,11 +50,13 @@ const nextCheckLabel = (monitor: Monitor) => {
               return fallback;
           })());
     const remainingSeconds = Math.max(0, Math.ceil((targetTime - now.value) / 1000));
-    if (remainingSeconds === 0) return isPortuguese.value ? 'Agora · 0s' : 'Now · 0s';
+    if (remainingSeconds === 0) return isPortuguese.value ? 'Verificando…' : 'Checking…';
 
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
     const remaining = minutes > 0 ? `${minutes}m ${seconds.toString().padStart(2, '0')}s` : `${seconds}s`;
+    const checkedRecently = monitor.last_checked_at && now.value - new Date(monitor.last_checked_at).getTime() < 5000;
+    if (checkedRecently) return isPortuguese.value ? `Checado · próximo em ${remaining}` : `Checked · next in ${remaining}`;
     return isPortuguese.value ? `Em ${remaining}` : `In ${remaining}`;
 };
 const breadcrumbs = [{ title: 'Monitors', href: '/monitors' }];

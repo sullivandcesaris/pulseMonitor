@@ -1,9 +1,24 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { Activity, Plus } from 'lucide-vue-next';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Activity, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
+type Monitor = {
+    id: number;
+    name: string;
+    target_url: string;
+    method: 'GET' | 'HEAD';
+    interval_seconds: number;
+    is_enabled: boolean;
+    organization: { name: string };
+};
+
+defineProps<{ monitors: Monitor[] }>();
 const breadcrumbs = [{ title: 'Monitors', href: '/monitors' }];
+
+function removeMonitor(id: number) {
+    if (window.confirm('Delete this monitor?')) router.delete(route('monitors.destroy', { monitor: id }));
+}
 </script>
 
 <template>
@@ -15,19 +30,26 @@ const breadcrumbs = [{ title: 'Monitors', href: '/monitors' }];
                     <h1 class="text-2xl font-semibold tracking-tight">Monitors</h1>
                     <p class="text-muted-foreground">Manage the websites and APIs PulseMonitor checks.</p>
                 </div>
-                <button
-                    class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:opacity-90"
-                >
+                <Link :href="route('monitors.create')" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:opacity-90">
                     <Plus class="size-4" /> Add monitor
-                </button>
+                </Link>
             </div>
-            <div class="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-card p-8 text-center">
-                <Activity class="mb-3 size-8 text-muted-foreground" />
-                <h2 class="font-semibold">Your monitors will appear here</h2>
-                <p class="mt-1 max-w-md text-sm text-muted-foreground">
-                    Monitor CRUD is the next domain step. This page establishes the authenticated navigation and dashboard surface.
-                </p>
+            <div v-if="monitors.length" class="overflow-hidden rounded-xl border bg-card">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b bg-muted/40 text-muted-foreground"><tr><th class="px-4 py-3 font-medium">Monitor</th><th class="px-4 py-3 font-medium">Method</th><th class="px-4 py-3 font-medium">Interval</th><th class="px-4 py-3 font-medium">Status</th><th class="px-4 py-3 text-right font-medium">Actions</th></tr></thead>
+                        <tbody class="divide-y">
+                            <tr v-for="monitor in monitors" :key="monitor.id">
+                                <td class="px-4 py-4"><div class="font-medium">{{ monitor.name }}</div><div class="max-w-xs truncate text-xs text-muted-foreground">{{ monitor.target_url }}</div></td>
+                                <td class="px-4 py-4">{{ monitor.method }}</td><td class="px-4 py-4">Every {{ monitor.interval_seconds }}s</td>
+                                <td class="px-4 py-4"><span :class="monitor.is_enabled ? 'text-emerald-600' : 'text-muted-foreground'">{{ monitor.is_enabled ? 'Enabled' : 'Disabled' }}</span></td>
+                                <td class="px-4 py-4"><div class="flex justify-end gap-2"><Link :href="route('monitors.edit', { monitor: monitor.id })" class="rounded-md p-2 hover:bg-muted" title="Edit"><Pencil class="size-4" /></Link><button class="rounded-md p-2 text-destructive hover:bg-muted" title="Delete" @click="removeMonitor(monitor.id)"><Trash2 class="size-4" /></button></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <div v-else class="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-card p-8 text-center"><Activity class="mb-3 size-8 text-muted-foreground" /><h2 class="font-semibold">No monitors yet</h2><p class="mt-1 max-w-md text-sm text-muted-foreground">Create your first monitor to start tracking availability.</p></div>
         </div>
     </AppLayout>
 </template>

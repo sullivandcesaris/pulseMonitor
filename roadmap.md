@@ -26,8 +26,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - PostgreSQL migrations ran successfully and `migrate:status` reports all migrations as `Ran`.
 - Redis passed both a service-level `PONG` check and a Laravel set/get round trip.
 - Laravel reports PostgreSQL, Redis cache/session/queue, and stack/single logging drivers; public storage is linked.
+- Week 2 domain foundations are in place: organizations, memberships, monitors, monitor checks, incidents, relationships, indexes, factories, seed data, and a relationship diagram.
 
-**Next priority:** begin domain modeling in Week 2.
+**Next priority:** implement organization authorization and monitor CRUD in Week 2.
 
 ---
 
@@ -79,8 +80,8 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - [x] Document frontend architecture and component conventions.
 
 #### 5. Future Preparation
-- [ ] Evaluate charting libraries (Apache ECharts or Chart.js).
-- [ ] Document the selected charting solution for Week 5.
+- [x] Evaluate charting libraries (Apache ECharts or Chart.js).
+- [x] Document the selected charting solution for Week 5 in `docs/charting-decision.md`.
 
 **Deliverable:** A working Laravel + Vue.js application with authentication, a responsive dashboard layout, light/dark themes, and reusable UI components.
 
@@ -111,47 +112,47 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 
 ### Domain Entities
 
-- [ ] Define the `User` entity.
-- [ ] Define the `Organization` entity.
-- [ ] Define the `Monitor` entity.
-- [ ] Define the `MonitorCheck` entity.
-- [ ] Define the `Incident` entity.
-- [ ] Define relationships between entities.
-- [ ] Create a database relationship diagram.
+- [x] Define the `User` entity.
+- [x] Define the `Organization` entity.
+- [x] Define the `Monitor` entity.
+- [x] Define the `MonitorCheck` entity.
+- [x] Define the `Incident` entity.
+- [x] Define relationships between entities.
+- [x] Create a database relationship diagram in `docs/domain-model.md`.
 
 ### Monitor Configuration
 
 Each monitor should support:
 
-- [ ] Monitor name.
-- [ ] Target URL.
-- [ ] HTTP method: GET or HEAD.
-- [ ] Monitoring interval (for example, 60 or 300 seconds).
-- [ ] Expected HTTP status code.
-- [ ] Request timeout.
-- [ ] Enabled/disabled state.
-- [ ] Organization ownership.
-- [ ] Monitoring timestamps and next scheduled check.
+- [x] Monitor name.
+- [x] Target URL.
+- [x] HTTP method: GET or HEAD.
+- [x] Monitoring interval (for example, 60 or 300 seconds).
+- [x] Expected HTTP status code.
+- [x] Request timeout.
+- [x] Enabled/disabled state.
+- [x] Organization ownership.
+- [x] Monitoring timestamps and next scheduled check.
 
 ### Database & Authorization
 
-- [ ] Create database migrations.
-- [ ] Create Eloquent models and relationships.
-- [ ] Implement organization membership.
-- [ ] Implement organization-based authorization.
-- [ ] Prevent cross-organization data access.
-- [ ] Create appropriate database indexes.
-- [ ] Add database factories and seeders.
+- [x] Create database migrations.
+- [x] Create Eloquent models and relationships.
+- [x] Implement organization membership.
+- [x] Implement organization-based authorization.
+- [x] Prevent cross-organization data access.
+- [x] Create appropriate database indexes.
+- [x] Add database factories and seeders.
 
 ### Monitor Management
 
-- [ ] Implement monitor creation.
-- [ ] Implement monitor editing.
-- [ ] Implement monitor deletion.
-- [ ] Implement monitor activation/deactivation.
-- [ ] Validate user input.
-- [ ] Add authorization tests.
-- [ ] Add CRUD feature tests.
+- [x] Implement monitor creation.
+- [x] Implement monitor editing.
+- [x] Implement monitor deletion.
+- [x] Implement monitor activation/deactivation.
+- [x] Validate user input.
+- [x] Add authorization tests.
+- [x] Add CRUD feature tests.
 
 **Deliverable:** Users can register and manage GET/HEAD monitoring targets within their organizations.
 
@@ -165,48 +166,48 @@ Each monitor should support:
 
 ### HTTP Monitoring
 
-- [ ] Create the monitoring service.
-- [ ] Implement GET checks.
-- [ ] Implement HEAD checks.
-- [ ] Configure expected HTTP status codes.
-- [ ] Measure HTTP response time.
-- [ ] Handle connection errors.
-- [ ] Handle request timeouts.
-- [ ] Record HTTP status codes.
-- [ ] Define how unexpected HTTP responses are classified.
-- [ ] Save results in the `monitor_checks` table.
+- [x] Create the monitoring service.
+- [x] Implement GET checks.
+- [x] Implement HEAD checks.
+- [x] Configure expected HTTP status codes.
+- [x] Measure HTTP response time.
+- [x] Handle connection errors.
+- [x] Handle request timeouts.
+- [x] Record HTTP status codes.
+- [x] Define how unexpected HTTP responses are classified.
+- [x] Save results in the `monitor_checks` table.
 
 ### Security
 
-- [ ] Require HTTP or HTTPS URLs.
-- [ ] Validate monitoring destinations.
-- [ ] Block private, loopback, link-local, and other restricted network destinations.
-- [ ] Prevent access to cloud metadata services.
-- [ ] Validate DNS resolutions and redirects.
-- [ ] Apply outbound network restrictions where possible.
-- [ ] Limit monitoring frequency.
-- [ ] Prevent unsafe or unauthorized targets.
+- [x] Require HTTP or HTTPS URLs.
+- [x] Validate monitoring destinations.
+- [x] Block private, loopback, link-local, and other restricted network destinations.
+- [x] Prevent access to cloud metadata services.
+- [x] Validate DNS resolutions and redirects.
+- [x] Apply outbound network restrictions where possible (application port allowlist, DNS/IP filtering, redirect blocking, and documented infrastructure egress boundary).
+- [x] Limit monitoring frequency.
+- [x] Prevent unsafe or unauthorized targets.
 
 ### Background Processing
 
-- [ ] Create a Laravel monitoring Job.
-- [ ] Configure Redis queues.
-- [ ] Configure Laravel Queue Workers.
-- [ ] Use Laravel Scheduler to identify due monitors.
-- [ ] Dispatch monitoring Jobs asynchronously.
-- [ ] Prevent duplicate concurrent checks.
-- [ ] Handle worker failures.
-- [ ] Record execution errors.
+- [x] Create a Laravel monitoring Job.
+- [x] Configure Redis queues.
+- [x] Configure Laravel Queue Workers through the dedicated Sail `queue` service.
+- [x] Use Laravel Scheduler to identify due monitors.
+- [x] Dispatch monitoring Jobs asynchronously.
+- [x] Prevent duplicate concurrent checks.
+- [x] Handle worker failures.
+- [x] Record execution errors.
 
 ### Testing
 
-- [ ] Test successful HTTP responses.
-- [ ] Test unexpected HTTP status codes.
-- [ ] Test connection failures.
-- [ ] Test timeouts.
-- [ ] Test invalid URLs.
-- [ ] Test SSRF protection.
-- [ ] Test job dispatching and result persistence.
+- [x] Test successful HTTP responses.
+- [x] Test unexpected HTTP status codes.
+- [x] Test connection failures.
+- [x] Test timeouts.
+- [x] Test invalid URLs.
+- [x] Test SSRF protection.
+- [x] Test job dispatching and result persistence.
 
 **Deliverable:** PulseMonitor automatically executes scheduled GET/HEAD checks and stores their results.
 

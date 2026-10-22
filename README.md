@@ -47,26 +47,30 @@ PulseMonitor starts as a modular monolith. The application, domain services, que
 
 See [docs/architecture.md](docs/architecture.md) for the system context, module boundaries, data flow, and key decisions.
 
-## Local development
+See [docs/frontend.md](docs/frontend.md) for Vue structure, UI conventions, design tokens, and frontend quality checks.
 
-The application is currently being bootstrapped. Once the Laravel project is created, the expected setup will be:
+## Local development with Laravel Sail
+
+Laravel Sail is the supported local development environment. It runs the application, PostgreSQL, and Redis through Docker Compose.
 
 ```bash
 cp .env.example .env
-docker compose up -d
 php artisan key:generate
-php artisan migrate --seed
-php artisan serve
+./vendor/bin/sail build
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan migrate --seed
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run dev
 ```
 
-Run the frontend and workers in separate terminals when those scripts are available:
+The application is available at `http://localhost:8000`. Run the queue worker and scheduler in separate terminals:
 
 ```bash
-npm install
-npm run dev
-php artisan horizon
-php artisan schedule:work
+./vendor/bin/sail artisan queue:work
+./vendor/bin/sail artisan schedule:work
 ```
+
+Stop the environment with `./vendor/bin/sail down`. Docker Desktop with WSL integration must be running before starting Sail.
 
 ## Security principles
 

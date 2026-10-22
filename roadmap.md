@@ -18,7 +18,7 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 
 - Laravel Vue/Inertia starter kit with authentication is running.
 - TypeScript, Vue, Tailwind CSS, shadcn-vue, light/dark themes, and responsive layouts are configured.
-- PulseMonitor dashboard, sidebar navigation, mock monitor view, and incident view are available.
+- PulseMonitor dashboard, sidebar navigation, monitor management, and organization-scoped incident history are available.
 - Frontend architecture and component conventions are documented in `docs/frontend.md`.
 - Production asset build, ESLint, Prettier, Vue type checking, Laravel Pint, and the starter test suite pass.
 - Laravel Sail is configured as the local runtime with PostgreSQL and Redis services.
@@ -29,8 +29,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Week 2 domain foundations are in place: organizations, memberships, monitors, monitor checks, incidents, relationships, indexes, factories, seed data, and a relationship diagram.
 - Week 3 HTTP monitoring is implemented with queued checks, scheduler dispatch, SSRF protections, outbound port restrictions, and a dedicated Redis queue worker.
 - Week 4 incident detection and recovery are implemented with configurable failure thresholds, idempotent transitions, recovery duration tracking, and automated tests.
+- Week 5 dashboard foundations are implemented with live monitor/check/incident data, 24-hour uptime and response-time metrics, recent checks, and unknown-data states.
 
-**Next priority:** finish Week 4 concurrency and infrastructure-retry tests, then begin the Week 5 dashboard and analytics work.
+**Next priority:** complete the Week 5 response-time chart, monitor filters, selectable availability periods, and notification workflows.
 
 ---
 
@@ -268,24 +269,24 @@ Each monitor should support:
 
 ### Dashboard
 
-- [ ] Create the main monitoring dashboard.
-- [ ] Display registered services.
-- [ ] Display current service status.
-- [ ] Display last check time.
-- [ ] Display HTTP response time.
-- [ ] Display recent monitoring results.
+- [x] Create the main monitoring dashboard.
+- [x] Display registered services.
+- [x] Display current service status.
+- [x] Display last check time.
+- [x] Display HTTP response time.
+- [x] Display recent monitoring results.
 - [ ] Create response-time charts.
 - [ ] Implement monitor filters.
-- [ ] Create incident history screens.
+- [x] Create incident history screens.
 
 ### Availability Metrics
 
-- [ ] Define how uptime is calculated.
+- [x] Define how uptime is calculated.
 - [ ] Calculate uptime percentage for selected periods.
-- [ ] Calculate average response time.
+- [x] Calculate average response time.
 - [ ] Identify periods without monitoring data.
-- [ ] Distinguish unknown status from confirmed downtime.
-- [ ] Display monitoring history.
+- [x] Distinguish unknown status from confirmed downtime.
+- [x] Display monitoring history.
 
 ### Notifications
 
@@ -299,9 +300,9 @@ Each monitor should support:
 
 ### User Experience
 
-- [ ] Create responsive dashboard layouts.
+- [x] Create responsive dashboard layouts.
 - [ ] Add loading and error states.
-- [ ] Provide clear incident information.
+- [x] Provide clear incident information.
 - [ ] Add confirmation messages for user actions.
 
 **Deliverable:** Customers can register services, monitor availability, view incidents, and receive outage notifications.

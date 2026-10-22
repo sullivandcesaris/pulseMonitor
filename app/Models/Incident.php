@@ -10,7 +10,7 @@ class Incident extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['monitor_id', 'status', 'failure_count', 'last_error', 'started_at', 'resolved_at'];
+    protected $fillable = ['monitor_id', 'status', 'failure_count', 'last_error', 'started_at', 'resolved_at', 'duration_seconds'];
 
     protected function casts(): array
     {

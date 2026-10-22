@@ -27,8 +27,10 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Redis passed both a service-level `PONG` check and a Laravel set/get round trip.
 - Laravel reports PostgreSQL, Redis cache/session/queue, and stack/single logging drivers; public storage is linked.
 - Week 2 domain foundations are in place: organizations, memberships, monitors, monitor checks, incidents, relationships, indexes, factories, seed data, and a relationship diagram.
+- Week 3 HTTP monitoring is implemented with queued checks, scheduler dispatch, SSRF protections, outbound port restrictions, and a dedicated Redis queue worker.
+- Week 4 incident detection and recovery are implemented with configurable failure thresholds, idempotent transitions, recovery duration tracking, and automated tests.
 
-**Next priority:** implement organization authorization and monitor CRUD in Week 2.
+**Next priority:** finish Week 4 concurrency and infrastructure-retry tests, then begin the Week 5 dashboard and analytics work.
 
 ---
 
@@ -219,40 +221,40 @@ Each monitor should support:
 
 ### Incident Detection
 
-- [ ] Define healthy and unhealthy states.
-- [ ] Implement configurable consecutive-failure thresholds.
-- [ ] Create incidents after repeated failures.
-- [ ] Prevent duplicate open incidents.
-- [ ] Record incident start time.
-- [ ] Record incident failure information.
-- [ ] Associate incidents with monitors.
+- [x] Define healthy and unhealthy states.
+- [x] Implement configurable consecutive-failure thresholds.
+- [x] Create incidents after repeated failures.
+- [x] Prevent duplicate open incidents.
+- [x] Record incident start time.
+- [x] Record incident failure information.
+- [x] Associate incidents with monitors.
 
 ### Recovery
 
-- [ ] Detect successful responses after an outage.
-- [ ] Define recovery confirmation rules.
-- [ ] Automatically resolve incidents.
-- [ ] Record incident resolution time.
-- [ ] Calculate incident duration.
-- [ ] Keep historical incidents available.
+- [x] Detect successful responses after an outage.
+- [x] Define recovery confirmation rules.
+- [x] Automatically resolve incidents.
+- [x] Record incident resolution time.
+- [x] Calculate incident duration.
+- [x] Keep historical incidents available.
 
 ### Reliability
 
-- [ ] Implement job retries and backoff.
-- [ ] Define when infrastructure failures should be retried.
-- [ ] Prevent duplicate incident transitions.
-- [ ] Handle concurrent workers.
-- [ ] Handle delayed and out-of-order check results.
-- [ ] Implement idempotent processing.
+- [x] Implement job retries and backoff.
+- [x] Define when infrastructure failures should be retried.
+- [x] Prevent duplicate incident transitions.
+- [x] Handle concurrent workers.
+- [x] Handle delayed and out-of-order check results.
+- [x] Implement idempotent processing.
 
 ### Tests
 
-- [ ] Test consecutive failures.
-- [ ] Test temporary failures.
-- [ ] Test incident creation.
-- [ ] Test incident recovery.
-- [ ] Test concurrent processing.
-- [ ] Test duplicate job execution.
+- [x] Test consecutive failures.
+- [x] Test temporary failures.
+- [x] Test incident creation.
+- [x] Test incident recovery.
+- [x] Test concurrent processing.
+- [x] Test duplicate job execution.
 
 **Deliverable:** PulseMonitor reliably detects outages, creates incidents, and records service recovery.
 

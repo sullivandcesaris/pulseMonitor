@@ -2,6 +2,7 @@
 
 namespace App\Services\Monitoring;
 
+use App\Exceptions\RetryableMonitorCheckException;
 use App\Models\Monitor;
 use App\Models\MonitorCheck;
 use Illuminate\Http\Client\ConnectionException;
@@ -11,7 +12,7 @@ use Throwable;
 
 class MonitorChecker
 {
-    public function check(Monitor $monitor): MonitorCheck
+    public function check(Monitor $monitor, bool $retryInfrastructure = false): MonitorCheck
     {
         $startedAt = hrtime(true);
         $status = 'down';
@@ -28,6 +29,9 @@ class MonitorChecker
             $status = $httpStatus === $monitor->expected_status ? 'up' : 'unexpected_status';
             $errorMessage = $status === 'up' ? null : "Expected HTTP {$monitor->expected_status}, received HTTP {$httpStatus}.";
         } catch (ConnectionException $exception) {
+            if ($retryInfrastructure) {
+                throw new RetryableMonitorCheckException('Connection failed or timed out.', 0, $exception);
+            }
             $errorMessage = 'Connection failed or timed out.';
         } catch (Throwable $exception) {
             $errorMessage = $exception->getMessage();
@@ -42,6 +46,23 @@ class MonitorChecker
             'checked_at' => $checkedAt,
         ]);
         $monitor->update(['last_checked_at' => $checkedAt, 'next_check_at' => $checkedAt->copy()->addSeconds($monitor->interval_seconds)]);
+        app(IncidentTracker::class)->process($check);
+
+        return $check;
+    }
+
+    public function recordFailure(Monitor $monitor, string $errorMessage): MonitorCheck
+    {
+        $checkedAt = now();
+        $check = $monitor->checks()->create([
+            'status' => 'down',
+            'http_status' => null,
+            'response_time_ms' => null,
+            'error_message' => $errorMessage,
+            'checked_at' => $checkedAt,
+        ]);
+        $monitor->update(['last_checked_at' => $checkedAt, 'next_check_at' => $checkedAt->copy()->addSeconds($monitor->interval_seconds)]);
+        app(IncidentTracker::class)->process($check);
 
         return $check;
     }

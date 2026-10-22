@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\RetryableMonitorCheckException;
 use App\Jobs\CheckMonitor;
 use App\Models\Monitor;
 use App\Models\Organization;
@@ -85,5 +86,24 @@ class MonitoringEngineTest extends TestCase
         $this->artisan('monitors:dispatch-due')->assertSuccessful();
 
         Queue::assertPushed(CheckMonitor::class, fn (CheckMonitor $job) => $job->monitor->is($monitor));
+    }
+
+    public function test_infrastructure_failures_are_retried_and_recorded_after_final_attempt(): void
+    {
+        Http::fake(['https://example.com/*' => Http::failedConnection()]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+        $job = new CheckMonitor($monitor);
+
+        $this->assertSame(3, $job->tries);
+        $this->assertSame([10, 60], $job->backoff());
+
+        try {
+            $job->handle(app(MonitorChecker::class));
+            $this->fail('The infrastructure failure should be retryable.');
+        } catch (RetryableMonitorCheckException $exception) {
+            $job->failed($exception);
+        }
+
+        $this->assertDatabaseHas('monitor_checks', ['monitor_id' => $monitor->id, 'status' => 'down']);
     }
 }

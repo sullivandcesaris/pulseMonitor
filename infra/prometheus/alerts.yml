@@ -1,0 +1,30 @@
+groups:
+  - name: pulsemonitor-operational
+    rules:
+      - alert: PulseMonitorHealthCheckFailing
+        expr: up{job="pulsemonitor"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: PulseMonitor health endpoint is unavailable
+      - alert: PulseMonitorQueueBacklog
+        expr: pulsemonitor_queue_jobs_pending > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: PulseMonitor queue backlog is growing
+      - alert: PulseMonitorOpenIncidents
+        expr: pulsemonitor_incidents_open > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: PulseMonitor has open incidents
+      - alert: PulseMonitorFailedJobs
+        expr: increase(pulsemonitor_failed_jobs_total[10m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: PulseMonitor queue jobs are failing

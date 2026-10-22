@@ -1,0 +1,25 @@
+{
+  "title": "PulseMonitor Operations",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Pending queue jobs",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [{ "expr": "pulsemonitor_queue_jobs_pending", "legendFormat": "{{queue}}" }]
+    },
+    {
+      "type": "stat",
+      "title": "Open incidents",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [{ "expr": "pulsemonitor_incidents_open" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Completed checks",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [{ "expr": "pulsemonitor_checks_completed_total" }]
+    }
+  ]
+}

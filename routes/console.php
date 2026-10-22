@@ -120,3 +120,4 @@ Artisan::command('monitoring:benchmark {--sizes=100,1000,10000} {--workers=4} {-
 })->purpose('Benchmark database scale and Redis queue throughput with synthetic data');
 
 Schedule::command('monitors:dispatch-due')->everyMinute();
+Schedule::command('horizon:snapshot')->everyFiveMinutes();

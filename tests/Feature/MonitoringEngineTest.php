@@ -75,6 +75,18 @@ class MonitoringEngineTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_redirects_are_not_followed(): void
+    {
+        Http::fake(['https://example.com/*' => Http::response('', 302, ['Location' => 'https://example.org/'])]);
+        $monitor = Monitor::factory()->create(['target_url' => 'https://example.com/health']);
+
+        $check = app(MonitorChecker::class)->check($monitor);
+
+        $this->assertSame('unexpected_status', $check->status);
+        $this->assertSame(302, $check->http_status);
+        Http::assertSentCount(1);
+    }
+
     public function test_due_monitors_are_dispatched_to_the_queue(): void
     {
         Queue::fake();

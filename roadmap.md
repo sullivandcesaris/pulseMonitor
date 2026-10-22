@@ -32,8 +32,9 @@ The repository is public and pushed to GitHub. The Laravel & Frontend Foundation
 - Week 5 dashboard, analytics, and notification workflows are implemented with live monitoring data, selectable periods, response-time charts, filters, incident history, and queued email delivery tracking.
 - Week 6 scalability foundations are implemented with separate monitoring/notification queues, independent workers, atomic due-monitor claims, overlap protection, historical pagination, and documented query strategy.
 - Week 6 benchmarks now cover 100, 1,000, and 10,000-monitor scenarios with database timing, queue throughput/waiting, CPU, memory, and bottleneck documentation.
+- Week 7 observability and operational controls are implemented with structured logs, correlation IDs, Horizon/Sentry integrations, Prometheus/Grafana definitions, health checks, security controls, and recovery procedures.
 
-**Next priority:** begin Week 7 observability, security, and operational reliability work.
+**Next priority:** validate the Week 7 operational integrations in the deployment environment, then begin Week 8 production deployment.
 
 ---
 
@@ -361,38 +362,38 @@ Each monitor should support:
 
 ### Application Observability
 
-- [ ] Implement structured application logs.
-- [ ] Implement correlation IDs.
-- [ ] Configure Laravel Horizon.
-- [ ] Configure Sentry.
-- [ ] Export application metrics.
-- [ ] Configure Prometheus.
-- [ ] Create Grafana dashboards.
-- [ ] Monitor queue latency.
-- [ ] Monitor failed jobs.
-- [ ] Monitor application response times.
-- [ ] Add health-check endpoints.
-- [ ] Configure operational alerts.
+- [x] Implement structured application logs.
+- [x] Implement correlation IDs.
+- [x] Configure Laravel Horizon.
+- [x] Configure Sentry.
+- [x] Export application metrics.
+- [x] Configure Prometheus.
+- [x] Create Grafana dashboards.
+- [x] Monitor queue latency.
+- [x] Monitor failed jobs.
+- [x] Monitor application response times.
+- [x] Add health-check endpoints.
+- [x] Configure operational alerts.
 
 ### Security
 
-- [ ] Review authentication and authorization.
-- [ ] Validate organization data isolation.
-- [ ] Review SSRF protection.
-- [ ] Test URL and redirect validation.
-- [ ] Apply appropriate rate limits.
-- [ ] Review sensitive data handling.
-- [ ] Protect monitoring credentials and configuration.
-- [ ] Review logging for sensitive information.
+- [x] Review authentication and authorization.
+- [x] Validate organization data isolation.
+- [x] Review SSRF protection.
+- [x] Test URL and redirect validation.
+- [x] Apply appropriate rate limits.
+- [x] Review sensitive data handling.
+- [x] Protect monitoring credentials and configuration.
+- [x] Review logging for sensitive information.
 
 ### Reliability & Maintenance
 
-- [ ] Test recovery after queue worker failures.
-- [ ] Test behavior during Redis outages.
-- [ ] Test behavior during database outages.
-- [ ] Define error-handling strategies.
-- [ ] Define data-retention policies.
-- [ ] Document operational recovery procedures.
+- [x] Test recovery after queue worker failures.
+- [x] Test behavior during Redis outages.
+- [x] Test behavior during database outages.
+- [x] Define error-handling strategies.
+- [x] Define data-retention policies.
+- [x] Document operational recovery procedures.
 
 **Deliverable:** A monitored application with operational metrics, error tracking, alerts, and documented security controls.
 

@@ -3,6 +3,7 @@ import { useLanguage } from '@/composables/useLanguage';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Activity, Pencil, Plus, Trash2 } from 'lucide-vue-next';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 type Monitor = {
     id: number;
@@ -11,11 +12,37 @@ type Monitor = {
     method: 'GET' | 'HEAD';
     interval_seconds: number;
     is_enabled: boolean;
+    next_check_at: string | null;
     organization: { name: string };
 };
 
 defineProps<{ monitors: Monitor[] }>();
 const { isPortuguese } = useLanguage();
+const now = ref(Date.now());
+let countdownTimer: number | undefined;
+
+onMounted(() => {
+    countdownTimer = window.setInterval(() => {
+        now.value = Date.now();
+    }, 1000);
+});
+
+onUnmounted(() => {
+    if (countdownTimer) window.clearInterval(countdownTimer);
+});
+
+const nextCheckLabel = (monitor: Monitor) => {
+    if (!monitor.is_enabled) return isPortuguese.value ? 'Pausado' : 'Paused';
+    if (!monitor.next_check_at) return isPortuguese.value ? 'Aguardando primeiro teste' : 'Waiting for first check';
+
+    const remainingSeconds = Math.max(0, Math.ceil((new Date(monitor.next_check_at).getTime() - now.value) / 1000));
+    if (remainingSeconds === 0) return isPortuguese.value ? 'A qualquer momento' : 'Due now';
+
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+    const remaining = minutes > 0 ? `${minutes}m ${seconds.toString().padStart(2, '0')}s` : `${seconds}s`;
+    return isPortuguese.value ? `Em ${remaining}` : `In ${remaining}`;
+};
 const breadcrumbs = [{ title: 'Monitors', href: '/monitors' }];
 
 function removeMonitor(id: number) {
@@ -54,6 +81,7 @@ function removeMonitor(id: number) {
                                 <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Monitor' : 'Monitor' }}</th>
                                 <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Método' : 'Method' }}</th>
                                 <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Intervalo' : 'Interval' }}</th>
+                                <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Próximo teste' : 'Next check' }}</th>
                                 <th class="px-4 py-3 font-medium">{{ isPortuguese ? 'Status' : 'Status' }}</th>
                                 <th class="px-4 py-3 text-right font-medium">{{ isPortuguese ? 'Ações' : 'Actions' }}</th>
                             </tr>
@@ -66,6 +94,11 @@ function removeMonitor(id: number) {
                                 </td>
                                 <td class="px-4 py-4">{{ monitor.method }}</td>
                                 <td class="px-4 py-4">{{ isPortuguese ? 'A cada' : 'Every' }} {{ monitor.interval_seconds }}s</td>
+                                <td class="px-4 py-4">
+                                    <span class="font-medium" :class="monitor.is_enabled ? 'text-primary' : 'text-muted-foreground'">{{
+                                        nextCheckLabel(monitor)
+                                    }}</span>
+                                </td>
                                 <td class="px-4 py-4">
                                     <span :class="monitor.is_enabled ? 'text-emerald-600' : 'text-muted-foreground'">{{
                                         monitor.is_enabled ? (isPortuguese ? 'Ativo' : 'Enabled') : isPortuguese ? 'Desativado' : 'Disabled'

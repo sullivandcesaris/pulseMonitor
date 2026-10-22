@@ -21,7 +21,17 @@ class MonitorController extends Controller
                 ->whereIn('organization_id', $organizationIds)
                 ->with('organization:id,name')
                 ->latest()
-                ->get(),
+                ->get()
+                ->map(fn (Monitor $monitor) => [
+                    'id' => $monitor->id,
+                    'name' => $monitor->name,
+                    'target_url' => $monitor->target_url,
+                    'method' => $monitor->method,
+                    'interval_seconds' => $monitor->interval_seconds,
+                    'is_enabled' => $monitor->is_enabled,
+                    'next_check_at' => $monitor->next_check_at?->toIso8601String(),
+                    'organization' => ['name' => $monitor->organization?->name],
+                ]),
         ]);
     }
 
